@@ -2,6 +2,6 @@
   "name": "papaya/template-responsive",
   "type": "papaya-template",
   "require": {
-    "papaya/composer-plugins": "*"
+    "papaya/composer-plugins": "1.*"
   }
 }
