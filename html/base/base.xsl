@@ -52,6 +52,10 @@
 <xsl:param name="PAGE_BASE_URL" />
 <!-- url of this page -->
 <xsl:param name="PAGE_URL" />
+<!-- request query string -->
+<xsl:param name="PAGE_REQUEST_QUERYSTRING" />
+<!-- request method -->
+<xsl:param name="PAGE_REQUEST_METHOD" />
 <!-- theme name -->
 <xsl:param name="PAGE_THEME" />
 <!-- theme set id if defined -->
@@ -91,12 +95,15 @@
 <!-- IE only, disable the smart tag linking, default: true -->
 <xsl:param name="IE_DISABLE_SMARTTAGS" select="false()" />
 <!-- IE only, optional user agent compatibility definition, default: not used -->
-<xsl:param name="USER_AGENT_COMPATIBILITY"></xsl:param>
+<xsl:param name="USER_AGENT_COMPATIBILITY" select="''"/>
 
 <!-- define indexing for robots -->
 <xsl:param name="PAGE_META_ROBOTS">index,follow</xsl:param>
 <!-- define indexing for robots if a box suggests content dupplication-->
-<xsl:param name="PAGE_META_ROBOTS_DUPLICATES">noindex,nofollow,nocache</xsl:param>
+<xsl:param name="PAGE_META_ROBOTS_DUPLICATES">noindex,follow,nocache</xsl:param>
+<!-- consider pages with parameters as dubplicates -->
+<xsl:param name="PAGE_META_ROBOTS_NOINDEX_SUBPAGE" select="false()"/>
+
 
 <!-- load file containing module specific css/js files name definitions -->
 <xsl:param name="MODULE_FILES" select="document('../info.xml')" />
@@ -381,7 +388,11 @@
   <xsl:if test="$metaTags/metatag[@type='description'] != ''">
     <meta name="description" content="{$metaTags/metatag[@type='description']}" />
   </xsl:if>
+  <xsl:variable name="isSubPage" select="($PAGE_REQUEST_QUERYSTRING != '') or ($PAGE_REQUEST_METHOD != 'get')"/>
   <xsl:choose>
+    <xsl:when test="$PAGE_META_ROBOTS_NOINDEX_SUBPAGE and $isSubPage">
+      <meta name="robots" content="{$PAGE_META_ROBOTS_DUPLICATES}" />
+    </xsl:when>
     <xsl:when test="/page/boxes/box/attributes/attribute[@name = 'noIndex' and @value = 'yes']">
       <meta name="robots" content="{$PAGE_META_ROBOTS_DUPLICATES}" />
     </xsl:when>
